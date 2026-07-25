@@ -1,0 +1,85 @@
+.appShell {
+  background-color: var(--mantine-color-gray-0);
+}
+
+.header {
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  background-color: var(--mantine-color-body);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(45deg, var(--mantine-color-blue-7), var(--mantine-color-cyan-5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navbar {
+  border-right: 1px solid var(--mantine-color-gray-2);
+  background-color: var(--mantine-color-body);
+  display: flex;
+  flex-direction: column;
+}
+
+.navbarMain {
+  flex: 1;
+}
+
+.menuHeader {
+  letter-spacing: 1px;
+  margin-left: 10px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: var(--mantine-font-size-sm);
+  color: var(--mantine-color-gray-7);
+  padding: 10px 12px;
+  border-radius: var(--mantine-radius-md);
+  font-weight: 500;
+  margin-bottom: 4px;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.link:hover {
+  background-color: var(--mantine-color-gray-0);
+  color: var(--mantine-color-black);
+}
+
+.link[data-active] {
+  background-color: var(--mantine-color-blue-light);
+  color: var(--mantine-color-blue-filled);
+  font-weight: 600;
+}
+
+.linkIcon {
+  color: var(--mantine-color-gray-5);
+  margin-right: var(--mantine-spacing-sm);
+  width: 20px;
+  height: 20px;
+  transition: color 0.2s ease;
+}
+
+.link[data-active] .linkIcon {
+  color: var(--mantine-color-blue-filled);
+}
+
+.footer {
+  padding-top: var(--mantine-spacing-md);
+  margin-top: var(--mantine-spacing-md);
+  border-top: 1px solid var(--mantine-color-gray-2);
+}
+
+.mainContent {
+  background-color: var(--mantine-color-gray-0);
+}
+
+.pageContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+}
