@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 const AuthContext = createContext({});
@@ -6,88 +6,93 @@ const AuthContext = createContext({});
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const demo = localStorage.getItem('sms_demo_session');
-    if (demo) {
-      try { return JSON.parse(demo).user; } catch(e) {}
-    }
-    return null;
-  });
+  const [user, setUser] = useState(null);
+  const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true); // true until session is resolved
 
-  const [role, setRole] = useState(() => {
-    const demo = localStorage.getItem('sms_demo_session');
-    if (demo) {
-      try { return JSON.parse(demo).role; } catch(e) {}
-    }
-    return null;
-  });
+  // Fetch role from the profiles table (linked to auth.users.id)
+  const fetchRole = useCallback(async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
 
-  const [loading, setLoading] = useState(false);
+      if (error) {
+        console.error('Error fetching user role:', error.message);
+        return null;
+      }
+      return data?.role ?? null;
+    } catch (err) {
+      console.error('Unexpected error fetching role:', err);
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
-    // Check active Supabase sessions
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        setUser(session.user);
-        await fetchRole(session.user.id);
+    // Resolve the current session on mount (server-validated)
+    const initSession = async () => {
+      try {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (currentUser) {
+          const userRole = await fetchRole(currentUser.id);
+          setUser(currentUser);
+          setRole(userRole);
+        }
+      } catch (err) {
+        console.error('Session init error:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    getSession();
+    initSession();
 
+    // Listen for auth state changes (sign-in, sign-out, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (session?.user) {
-          setUser(session.user);
-          await fetchRole(session.user.id);
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+          if (session?.user) {
+            const userRole = await fetchRole(session.user.id);
+            setUser(session.user);
+            setRole(userRole);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setRole(null);
         }
+        // Always clear loading after first auth event
+        setLoading(false);
       }
     );
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [fetchRole]);
 
-  const fetchRole = async (userId) => {
-    try {
-      const { data } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .single();
-        
-      if (data?.role) {
-        setRole(data.role);
-      }
-    } catch (error) {
-      console.error("Error fetching user role:", error);
-    }
+  /**
+   * Sign in with email and password.
+   * Returns { error } — null error means success.
+   */
+  const signIn = async (email, password) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    return { error };
   };
 
-  const loginAsRole = (userEmail, userRole) => {
-    const sessionObj = {
-      user: { id: 'demo-id-' + userRole, email: userEmail },
-      role: userRole
-    };
-    localStorage.setItem('sms_demo_session', JSON.stringify(sessionObj));
-    setUser(sessionObj.user);
-    setRole(sessionObj.role);
-  };
-
+  /**
+   * Sign out the current user.
+   */
   const signOut = async () => {
-    localStorage.removeItem('sms_demo_session');
     setUser(null);
     setRole(null);
     await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, loginAsRole, signOut }}>
+    <AuthContext.Provider value={{ user, role, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
 };
-

@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/auth/Login';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 import DashboardLayout from './components/DashboardLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ClassManagement from './pages/admin/ClassManagement';
@@ -19,8 +21,25 @@ import MarkEntry from './pages/teacher/MarkEntry';
 import AttendanceTracking from './pages/teacher/AttendanceTracking';
 import StudentDashboard from './pages/student/StudentDashboard';
 
+/** Full-screen loading spinner shown while the auth session is being resolved */
+const AuthLoadingSpinner = () => (
+  <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+    <div className="flex flex-col items-center gap-4">
+      <div className="h-12 w-12 rounded-full border-4 border-emerald-500/20 border-t-emerald-500 animate-spin" />
+      <p className="text-slate-400 text-sm">সেশন লোড হচ্ছে...</p>
+    </div>
+  </div>
+);
+
+/**
+ * Guards a route — waits for auth loading, then enforces login + role checks.
+ * allowedRoles: if provided, only those roles can access the outlet.
+ */
 const ProtectedRoute = ({ allowedRoles }) => {
-  const { user, role } = useAuth();
+  const { user, role, loading } = useAuth();
+
+  // Don't flash to /login before session is resolved
+  if (loading) return <AuthLoadingSpinner />;
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -36,12 +55,37 @@ const ProtectedRoute = ({ allowedRoles }) => {
   return <Outlet />;
 };
 
-const AdminRedirect = () => {
-  const { user, role } = useAuth();
-  if (user && role === 'admin') {
-    return <Navigate to="/dashboard/admin" replace />;
-  }
+/**
+ * Smart redirect at /dashboard — sends user to their role-based dashboard.
+ */
+const DashboardRedirect = () => {
+  const { user, role, loading } = useAuth();
+  if (loading) return <AuthLoadingSpinner />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (role === 'admin') return <Navigate to="/dashboard/admin" replace />;
+  if (role === 'teacher') return <Navigate to="/dashboard/teacher" replace />;
+  if (role === 'student') return <Navigate to="/dashboard/student" replace />;
   return <Navigate to="/login" replace />;
+};
+
+/** Redirects /admin shortcut for admins */
+const AdminRedirect = () => {
+  const { user, role, loading } = useAuth();
+  if (loading) return <AuthLoadingSpinner />;
+  if (user && role === 'admin') return <Navigate to="/dashboard/admin" replace />;
+  return <Navigate to="/login" replace />;
+};
+
+/** Redirect already-logged-in users away from /login */
+const GuestRoute = ({ children }) => {
+  const { user, role, loading } = useAuth();
+  if (loading) return <AuthLoadingSpinner />;
+  if (user) {
+    if (role === 'admin') return <Navigate to="/dashboard/admin" replace />;
+    if (role === 'teacher') return <Navigate to="/dashboard/teacher" replace />;
+    if (role === 'student') return <Navigate to="/dashboard/student" replace />;
+  }
+  return children;
 };
 
 function App() {
@@ -51,13 +95,18 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+          <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/admin" element={<AdminRedirect />} />
-          
-          {/* Protected Dashboard Layout (Requires any login) */}
+
+          {/* Dashboard root — role-based redirect */}
+          <Route path="/dashboard" element={<DashboardRedirect />} />
+
+          {/* Protected Dashboard Layout */}
           <Route path="/dashboard" element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
-              
+
               {/* Admin Only Routes */}
               <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
                 <Route path="admin" element={<AdminDashboard />} />
@@ -72,8 +121,6 @@ function App() {
                 <Route path="admin/settings" element={<SettingsPage />} />
                 <Route path="admin/reports" element={<ReportsPage />} />
               </Route>
-
-
 
               {/* Teacher Only Routes */}
               <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
