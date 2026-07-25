@@ -184,15 +184,36 @@ export default function LandingPage() {
               {dbTeachers.map((teacher, index) => (
                 <Card key={teacher.id || index}
                   className="bg-slate-900/90 border-slate-800 p-5 sm:p-6 text-center rounded-2xl hover:border-emerald-500/50 transition-all shadow-xl group">
-                  <Avatar className="h-20 w-20 sm:h-28 sm:w-28 mx-auto mb-4 border-2 border-emerald-500/40 shadow-xl group-hover:scale-105 transition-transform overflow-hidden">
-                    <AvatarImage
-                      src={teacher.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${teacher.full_name_en || teacher.full_name_bn || 'Teacher'}&style=circle`}
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="bg-slate-800 text-emerald-400 font-bold text-xl">
-                      {(teacher.full_name_bn || teacher.full_name_en || 'T')[0]}
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="relative mx-auto mb-4 w-fit group-hover:scale-105 transition-transform">
+                    {teacher.avatar_url ? (
+                      <Avatar className="h-24 w-24 sm:h-28 sm:w-28 mx-auto border-2 border-emerald-500/40 shadow-xl overflow-hidden">
+                        <AvatarImage src={teacher.avatar_url} className="object-cover" />
+                        <AvatarFallback className="bg-slate-800 text-emerald-400 font-bold text-xl">
+                          {(teacher.full_name_bn || teacher.full_name_en || 'T')[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                    ) : (
+                      <div className="h-24 w-24 sm:h-28 sm:w-28 mx-auto rounded-full bg-gradient-to-tr from-emerald-950 via-slate-900 to-teal-950 border-2 border-emerald-500/40 p-1 shadow-xl flex items-center justify-center overflow-hidden">
+                        <svg viewBox="0 0 100 100" className="w-full h-full text-emerald-300">
+                          <circle cx="50" cy="50" r="48" fill="#090d16" />
+                          <circle cx="50" cy="50" r="44" fill="none" stroke="#10b981" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.5" />
+                          <path d="M 18 95 C 18 68, 30 63, 50 63 C 70 63, 82 68, 82 95 Z" fill="#ffffff" />
+                          <path d="M 42 63 L 50 76 L 58 63 Z" fill="#e2e8f0" />
+                          <rect x="44" y="50" width="12" height="15" rx="3" fill="#f5d0a9" />
+                          <path d="M 33 40 C 33 65, 67 65, 67 40 C 67 40, 60 47, 50 47 C 40 47, 33 40, 33 40 Z" fill="#1e293b" />
+                          <path d="M 36 42 C 36 62, 64 62, 64 42 C 64 42, 58 46, 50 46 C 42 46, 36 42, 36 42 Z" fill="#334155" />
+                          <ellipse cx="50" cy="38" rx="14" ry="16" fill="#f5d0a9" />
+                          <path d="M 40 31 Q 44 29 46 32" stroke="#1e293b" strokeWidth="1.5" fill="none" />
+                          <path d="M 60 31 Q 56 29 54 32" stroke="#1e293b" strokeWidth="1.5" fill="none" />
+                          <circle cx="43" cy="35" r="1.5" fill="#1e293b" />
+                          <circle cx="57" cy="35" r="1.5" fill="#1e293b" />
+                          <path d="M 45 42 Q 50 45 55 42" stroke="#1e293b" strokeWidth="1.2" fill="none" />
+                          <path d="M 33 30 C 33 16, 67 16, 67 30 C 67 30, 60 25, 50 25 C 40 25, 33 30, 33 30 Z" fill="#ffffff" />
+                          <path d="M 33 30 L 67 30" stroke="#cbd5e1" strokeWidth="1.5" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
                   <h3 className="font-bold text-base sm:text-lg text-white group-hover:text-emerald-400 transition-colors">
                     {teacher.full_name_bn || teacher.full_name_en || 'সম্মানিত শিক্ষক'}
                   </h3>
@@ -303,13 +324,13 @@ export default function LandingPage() {
         <div className="container mx-auto max-w-7xl px-4 sm:px-6">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
             <div className="flex items-center gap-2.5">
-              <Building2 className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-              <span className="font-semibold text-white">{settings.madrasaNameBn}</span>
+              <img src="/logo.png" alt="Logo" className="h-6 w-6 object-contain rounded-full bg-white p-0.5" />
+              <span className="font-semibold text-white text-xs sm:text-sm">{settings.madrasaNameBn}</span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500">
-              © {new Date().getFullYear()} {settings.madrasaNameBn} | সর্বস্বত্ব সংরক্ষিত
+            <p className="text-xs text-slate-400 font-medium">
+              © {new Date().getFullYear()} {settings.madrasaNameBn} | Developed By: <span className="font-bold text-white">Md Arif Uddin</span> | <a href="https://wa.me/8801825334505" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 font-bold hover:underline font-mono inline-flex items-center gap-1">💬 01825334505</a>
             </p>
-            <Link to="/login" className="text-xs text-slate-500 hover:text-emerald-400 transition-colors">
+            <Link to="/login" className="text-xs text-slate-400 hover:text-emerald-400 transition-colors font-semibold">
               পোর্টাল লগইন →
             </Link>
           </div>

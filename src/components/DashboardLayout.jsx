@@ -1,48 +1,51 @@
 import { useState } from 'react';
-import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, BookOpen, GraduationCap, UserPlus, Wallet, Receipt, Megaphone, Calendar, LogOut, Menu, X, Building2, Bell, Search, ShieldCheck, Settings, FileText } from 'lucide-react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-
+import { 
+  Building2, Users, BookOpen, Layers, UserCheck, CreditCard, 
+  DollarSign, FileText, Settings, LogOut, Menu, X, Bell, Search, 
+  Calendar, Award, CheckSquare, ChevronRight
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 export default function DashboardLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { signOut, role, user } = useAuth();
-  const navigate = useNavigate();
+  const { user, role, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
-    await signOut();
-    navigate('/login');
+    try {
+      await logout();
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
   };
 
   const adminLinks = [
-    { link: '/dashboard/admin', label: 'ড্যাশবোর্ড', icon: LayoutDashboard },
-    { link: '/dashboard/admin/classes', label: 'শ্রেণি ও বিভাগ', icon: GraduationCap },
-    { link: '/dashboard/admin/students', label: 'শিক্ষার্থী তালিকা ও ভর্তি', icon: BookOpen },
-    { link: '/dashboard/admin/fees', label: 'ফি আদায় ও রসিদ', icon: Receipt },
-    { link: '/dashboard/admin/expenses', label: 'হিসাব ও ব্যয়', icon: Wallet },
-    { link: '/dashboard/admin/reports', label: 'রিপোর্ট ও হিসাব', icon: FileText },
-    { link: '/dashboard/admin/notices', label: 'নোটিশ বোর্ড', icon: Megaphone },
-    { link: '/dashboard/admin/routine', label: 'ক্লাস রুটিন', icon: Calendar },
-    { link: '/dashboard/admin/teachers', label: 'শিক্ষক ও স্টাফ', icon: Users },
-    { link: '/dashboard/admin/settings', label: 'মাদ্রাসা সেটিংস', icon: Settings },
+    { label: 'ড্যাশবোর্ড ওভারভিউ', link: '/dashboard/admin', icon: Building2 },
+    { label: 'শ্রেণি ও বিষয় ব্যবস্থাপনা', link: '/dashboard/admin/classes', icon: Layers },
+    { label: 'শিক্ষার্থী রেজিস্টার & ভর্তি', link: '/dashboard/admin/students', icon: Users },
+    { label: 'শিক্ষক ও স্টাফ ডিরেক্টরি', link: '/dashboard/admin/teachers', icon: UserCheck },
+    { label: 'বক্স-ওয়াইজ ক্লাস রুটিন', link: '/dashboard/admin/routine', icon: Calendar },
+    { label: 'ফি ও টিউশন কালেকশন', link: '/dashboard/admin/fees', icon: CreditCard },
+    { label: 'মাদ্রাসা হিসাব ও ব্যয় রেজিস্টার', link: '/dashboard/admin/expenses', icon: DollarSign },
+    { label: 'নোটিশ বোর্ড প্রকাশ', link: '/dashboard/admin/notices', icon: Bell },
+    { label: 'রিপোর্ট ও ট্যাবুলেশন শিট', link: '/dashboard/admin/reports', icon: FileText },
+    { label: 'মাদ্রাসা সেটিংস', link: '/dashboard/admin/settings', icon: Settings },
   ];
 
-
-
-
   const teacherLinks = [
-    { link: '/dashboard/teacher', label: 'ড্যাশবোর্ড', icon: LayoutDashboard },
-    { link: '/dashboard/teacher/marks', label: 'নম্বর ইনপুট', icon: BookOpen },
-    { link: '/dashboard/teacher/attendance', label: 'উপস্থিতি খাতা', icon: Users },
+    { label: 'শিক্ষক ড্যাশবোর্ড', link: '/dashboard/teacher', icon: Building2 },
+    { label: 'দৈনিক হাজিরা খাতা', link: '/dashboard/teacher/attendance', icon: CheckSquare },
+    { label: 'পরীক্ষার নম্বর ইনপুট', link: '/dashboard/teacher/marks', icon: Award },
   ];
 
   const studentLinks = [
-    { link: '/dashboard/student', label: 'আমার পোর্টাল', icon: LayoutDashboard },
+    { label: 'শিক্ষার্থী পোর্টাল', link: '/dashboard/student', icon: Building2 },
   ];
 
   const getLinks = () => {
@@ -75,42 +78,34 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-slate-100 border-r border-slate-800 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col shadow-2xl",
+          "fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-slate-100 border-r border-slate-800 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col justify-between shadow-2xl h-screen sticky top-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Sidebar Header */}
-        <div className="h-20 flex items-center justify-between px-6 border-b border-slate-800/80 bg-slate-950/40">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white shadow-md shadow-emerald-950">
-              <Building2 className="h-5 w-5" />
-            </div>
+        <div className="h-20 flex items-center justify-between px-6 border-b border-slate-800/80 bg-slate-950/40 shrink-0">
+          <Link to="/" className="flex items-center gap-3 min-w-0">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="h-10 w-10 object-contain rounded-full bg-white p-0.5 shadow-md flex-shrink-0" 
+            />
             <div>
-              <h2 className="font-bold text-lg leading-tight text-white">মাদ্রাসা ইআরপি</h2>
-              <span className="text-[11px] text-emerald-400 font-semibold tracking-wider uppercase">ডিজিটাল সিস্টেম</span>
+              <h2 className="font-bold text-base leading-tight text-white truncate">মাদ্রাসা ইআরপি</h2>
+              <span className="text-[10px] text-emerald-400 font-semibold tracking-wider uppercase">ডিজিটাল সিস্টেম</span>
             </div>
           </Link>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-slate-400 hover:text-white">
+
+          <button 
+            onClick={() => setSidebarOpen(false)} 
+            className="lg:hidden text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* User Role Card */}
-        <div className="p-4 mx-4 my-3 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center gap-3">
-          <Avatar className="h-10 w-10 bg-emerald-600 text-white font-bold border border-emerald-400/30">
-            <AvatarFallback>{role?.charAt(0).toUpperCase() || 'A'}</AvatarFallback>
-          </Avatar>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs text-slate-400 truncate">{user?.email || 'admin@madrasa.edu'}</p>
-            <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px] px-2 py-0.5 mt-0.5 font-semibold">
-              {getRoleBadgeLabel()}
-            </Badge>
-          </div>
-        </div>
-
-        {/* Navigation Items */}
-        <div className="flex-1 overflow-y-auto py-2 px-4 space-y-1">
-          <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">প্রধান মেনু</p>
+        {/* Navigation Links */}
+        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-1.5 custom-scrollbar">
           {navLinks.map((item) => {
             const isActive = location.pathname === item.link;
             return (
@@ -119,50 +114,52 @@ export default function DashboardLayout() {
                 to={item.link}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  "flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200",
+                  "flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs font-semibold transition-all duration-200",
                   isActive 
-                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-950 font-semibold" 
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-950 font-bold" 
                     : "text-slate-300 hover:bg-slate-800 hover:text-white"
                 )}
               >
-                <item.icon className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-400")} />
-                <span>{item.label}</span>
+                <item.icon className={cn("w-4 h-4 flex-shrink-0", isActive ? "text-white" : "text-emerald-400")} />
+                <span className="truncate">{item.label}</span>
               </Link>
             );
           })}
         </div>
 
-        {/* Logout Footer */}
-        <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
+        {/* Mobile & Desktop Always Visible Logout Footer */}
+        <div className="p-4 border-t border-slate-800 bg-slate-950/80 shrink-0">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3.5 py-2.5 w-full rounded-xl text-sm font-medium text-slate-400 hover:bg-red-950/60 hover:text-red-300 transition-colors border border-transparent hover:border-red-900/50"
+            className="flex items-center justify-center gap-2 px-4 py-3 w-full rounded-xl text-xs font-bold bg-red-950/70 text-red-200 hover:bg-red-900 hover:text-white transition-all border border-red-800/60 shadow-md"
           >
-            <LogOut className="w-5 h-5 text-red-400" />
-            লগআউট করুন
+            <LogOut className="w-4 h-4 text-red-400" />
+            লগআউট করুন (Logout)
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         
         {/* Top Header */}
-        <header className="h-20 bg-white border-b border-slate-200/80 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 shadow-sm z-30">
-          <div className="flex items-center gap-4">
+        <header className="h-20 bg-white border-b border-slate-200/80 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 shadow-sm z-30 sticky top-0">
+          <div className="flex items-center gap-3">
             <button 
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-slate-600 hover:text-slate-900 p-2.5 -ml-2 rounded-xl hover:bg-slate-100 border border-slate-200"
+              className="lg:hidden text-slate-700 hover:text-slate-900 p-2 rounded-xl hover:bg-slate-100 border border-slate-200"
+              aria-label="Open Sidebar Menu"
             >
               <Menu className="w-6 h-6" />
             </button>
+
             <div className="hidden md:flex items-center gap-2 px-3.5 py-2 bg-slate-100/80 rounded-xl border border-slate-200 text-slate-500 w-72">
               <Search className="w-4 h-4 text-slate-400" />
               <input type="text" placeholder="খুঁজুন (আইডি, নাম, শ্রেণি)..." className="bg-transparent text-xs w-full focus:outline-none text-slate-800" />
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" className="rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 relative">
                 <Bell className="w-5 h-5" />
@@ -170,15 +167,24 @@ export default function DashboardLayout() {
               </Button>
             </div>
 
-            
-            <div className="h-8 w-px bg-slate-200 hidden sm:block" />
+            <div className="h-8 w-px bg-slate-200" />
 
-            <div className="flex items-center gap-3">
+            {/* Quick Header Logout Button */}
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+              className="text-xs font-bold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl h-9 px-3 border border-red-200/80 flex items-center gap-1.5"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">লগআউট</span>
+            </Button>
+
+            <div className="flex items-center gap-2.5">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-slate-800 leading-none">মাদ্রাসা ম্যানেজমেন্ট</p>
-                <p className="text-xs text-slate-500 mt-1 font-medium">{getRoleBadgeLabel()}</p>
+                <p className="text-xs font-extrabold text-slate-800 leading-none">মাদ্রাসা প্যানেল</p>
+                <p className="text-[10px] text-emerald-700 font-bold mt-0.5">{getRoleBadgeLabel()}</p>
               </div>
-              <Avatar className="h-10 w-10 bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-bold shadow-md shadow-emerald-100">
+              <Avatar className="h-9 w-9 bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-bold shadow-md">
                 <AvatarFallback>{role?.charAt(0).toUpperCase() || 'A'}</AvatarFallback>
               </Avatar>
             </div>
@@ -186,15 +192,18 @@ export default function DashboardLayout() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto py-4 px-3 sm:px-5">
-          <div className="w-full space-y-4">
-            <Outlet />
-          </div>
+        <main className="flex-1 p-4 sm:p-6 space-y-4">
+          <Outlet />
         </main>
 
+        {/* Footer with Developer Credits */}
+        <footer className="py-4 px-6 border-t border-slate-200 bg-white text-center text-xs text-slate-600 font-medium shrink-0">
+          <p>
+            © {new Date().getFullYear()} রংগিয়াঘোনা মনছুরিয়া ফাযিল (ডিগ্রী) মাদ্রাসা | Developed By: <span className="font-extrabold text-slate-900">Md Arif Uddin</span> | <a href="https://wa.me/8801825334505" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-600 font-bold hover:underline font-mono inline-flex items-center gap-1">💬 01825334505</a>
+          </p>
+        </footer>
 
       </div>
     </div>
   );
 }
-

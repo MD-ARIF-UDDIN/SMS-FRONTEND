@@ -94,6 +94,14 @@ function App() {
           <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
+          {/* Alias Direct Redirects */}
+          <Route path="/admin" element={<Navigate to="/dashboard/admin" replace />} />
+          <Route path="/admin/*" element={<Navigate to="/dashboard/admin" replace />} />
+          <Route path="/teacher" element={<Navigate to="/dashboard/teacher" replace />} />
+          <Route path="/teacher/*" element={<Navigate to="/dashboard/teacher" replace />} />
+          <Route path="/student" element={<Navigate to="/dashboard/student" replace />} />
+          <Route path="/student/*" element={<Navigate to="/dashboard/student" replace />} />
+
 
           {/* Dashboard root — role-based redirect */}
           <Route path="/dashboard" element={<DashboardRedirect />} />

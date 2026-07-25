@@ -1,16 +1,16 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 const LOCAL_KEY = 'madrasa_settings';
 
 const DEFAULT_SETTINGS = {
-  madrasaNameBn: 'আল-জামিয়া ইসলামিয়া মাদ্রাসা',
-  madrasaNameEn: 'Al-Jamia Islamia Madrasa',
+  madrasaNameBn: 'রংগিয়াঘোনা মনছুরিয়া ফাযিল (ডিগ্রী) মাদ্রাসা',
+  madrasaNameEn: 'Rongiyaghona Monsuria Fazil (Degree) Madrasah',
   eiinNumber: '১৩২৪৫৬',
   email: 'info@aljamia.edu.bd',
   phone: '০১৮০০-০০০-০০০',
   altPhone: '০১৭০০-০০০-০০০',
-  address: 'মাদ্রাসা রোড, রামপুরা, ঢাকা-১২১৯, বাংলাদেশ',
+  address: 'রংগিয়াঘোনা, বাঁশখালী, চট্টগ্রাম, বাংলাদেশ',
   establishedYear: '১৯৮৫',
   currentSession: '২০২৬-২০২৭',
   currencySymbol: '৳',
