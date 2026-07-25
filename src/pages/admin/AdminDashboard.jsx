@@ -75,24 +75,24 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8 font-sans">
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 p-6 md:p-8 rounded-3xl text-white shadow-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl text-white shadow-xl">
         <div>
-          <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 mb-3 px-3 py-1 text-xs">
+          <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 mb-2 sm:mb-3 px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs">
             সেশন ২০২৬-২০২৭
           </Badge>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">প্রধান এডমিন ড্যাশবোর্ড</h1>
-          <p className="text-slate-300 text-sm mt-1">মাদ্রাসার সার্বিক একাডেমি ও আর্থিক চিত্র একনজরে দেখুন</p>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight">প্রধান এডমিন ড্যাশবোর্ড</h1>
+          <p className="text-slate-300 text-xs sm:text-sm mt-1">মাদ্রাসার সার্বিক একাডেমি ও আর্থিক চিত্র একনজরে দেখুন</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Link to="/dashboard/admin/admissions">
-            <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-md">
-              <UserPlus className="w-4 h-4 mr-2" /> নতুন ভর্তি
+            <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-md text-xs sm:text-sm h-9 sm:h-10 px-3 sm:px-4">
+              <UserPlus className="w-4 h-4 mr-1.5 sm:mr-2 shrink-0" /> নতুন ভর্তি
             </Button>
           </Link>
           <Link to="/dashboard/admin/fees">
-            <Button variant="outline" className="border-slate-700 bg-slate-800/80 text-white hover:bg-slate-700 rounded-xl">
-              <Receipt className="w-4 h-4 mr-2" /> ফি আদায়
+            <Button variant="outline" className="border-slate-700 bg-slate-800/80 text-white hover:bg-slate-700 rounded-xl text-xs sm:text-sm h-9 sm:h-10 px-3 sm:px-4">
+              <Receipt className="w-4 h-4 mr-1.5 sm:mr-2 shrink-0" /> ফি আদায়
             </Button>
           </Link>
         </div>
@@ -168,41 +168,41 @@ export default function AdminDashboard() {
             <CardDescription className="text-xs text-slate-500">মাদ্রাসার নিয়মিত কার্যাবলীর সরাসরি এক্সেস</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <Link to="/dashboard/admin/admissions" className="p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
-                <UserPlus className="w-8 h-8 text-emerald-600 mb-2 group-hover:scale-110 transition-transform" />
-                <span className="font-bold text-sm text-slate-800">শিক্ষার্থী ভর্তি</span>
-                <span className="text-[11px] text-slate-500 mt-1">নতুন এনরোলমেন্ট</span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+              <Link to="/dashboard/admin/admissions" className="p-3 sm:p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
+                <UserPlus className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-600 mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-xs sm:text-sm text-slate-800">শিক্ষার্থী ভর্তি</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">নতুন এনরোলমেন্ট</span>
               </Link>
 
-              <Link to="/dashboard/admin/fees" className="p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
-                <Receipt className="w-8 h-8 text-teal-600 mb-2 group-hover:scale-110 transition-transform" />
-                <span className="font-bold text-sm text-slate-800">ফি আদায়</span>
-                <span className="text-[11px] text-slate-500 mt-1">রসিদ জেনারেট</span>
+              <Link to="/dashboard/admin/fees" className="p-3 sm:p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
+                <Receipt className="w-6 h-6 sm:w-8 sm:h-8 text-teal-600 mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-xs sm:text-sm text-slate-800">ফি আদায়</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">রসিদ জেনারেট</span>
               </Link>
 
-              <Link to="/dashboard/admin/expenses" className="p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
-                <Wallet className="w-8 h-8 text-amber-600 mb-2 group-hover:scale-110 transition-transform" />
-                <span className="font-bold text-sm text-slate-800">খরচ হিসাব</span>
-                <span className="text-[11px] text-slate-500 mt-1">ভাউচার তৈরি</span>
+              <Link to="/dashboard/admin/expenses" className="p-3 sm:p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
+                <Wallet className="w-6 h-6 sm:w-8 sm:h-8 text-amber-600 mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-xs sm:text-sm text-slate-800">খরচ হিসাব</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">ভাউচার তৈরি</span>
               </Link>
 
-              <Link to="/dashboard/admin/classes" className="p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
-                <GraduationCap className="w-8 h-8 text-indigo-600 mb-2 group-hover:scale-110 transition-transform" />
-                <span className="font-bold text-sm text-slate-800">শ্রেণি ব্যবস্থাপনা</span>
-                <span className="text-[11px] text-slate-500 mt-1">বিভাগ ও বিষয়</span>
+              <Link to="/dashboard/admin/classes" className="p-3 sm:p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
+                <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600 mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-xs sm:text-sm text-slate-800">শ্রেণি ব্যবস্থাপনা</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">বিভাগ ও বিষয়</span>
               </Link>
 
-              <Link to="/dashboard/admin/routine" className="p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
-                <TrendingUp className="w-8 h-8 text-blue-600 mb-2 group-hover:scale-110 transition-transform" />
-                <span className="font-bold text-sm text-slate-800">ক্লাস রুটিন</span>
-                <span className="text-[11px] text-slate-500 mt-1">সময়সূচি</span>
+              <Link to="/dashboard/admin/routine" className="p-3 sm:p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
+                <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-xs sm:text-sm text-slate-800">ক্লাস রুটিন</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">সময়সূচি</span>
               </Link>
 
-              <Link to="/dashboard/admin/notices" className="p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
-                <Megaphone className="w-8 h-8 text-rose-600 mb-2 group-hover:scale-110 transition-transform" />
-                <span className="font-bold text-sm text-slate-800">নোটিশ প্রকাশ</span>
-                <span className="text-[11px] text-slate-500 mt-1">ঘোষণা প্রদান</span>
+              <Link to="/dashboard/admin/notices" className="p-3 sm:p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col items-center text-center group">
+                <Megaphone className="w-6 h-6 sm:w-8 sm:h-8 text-rose-600 mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-xs sm:text-sm text-slate-800">নোটিশ প্রকাশ</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">ঘোষণা প্রদান</span>
               </Link>
             </div>
           </CardContent>
