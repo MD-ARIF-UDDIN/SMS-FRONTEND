@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSettings } from '../hooks/useSettings';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -14,34 +15,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
 export default function LandingPage() {
+  const { settings } = useSettings();
   const [notices, setNotices] = useState([]);
   const [dbTeachers, setDbTeachers] = useState([]);
   const [stats, setStats] = useState({ students: 0, teachers: 0 });
   const [loadingTeachers, setLoadingTeachers] = useState(true);
 
-  const [settings, setSettings] = useState({
-    madrasaNameBn: 'আল-জামিয়া ইসলামিয়া মাদ্রাসা',
-    madrasaNameEn: 'Al-Jamia Islamia Madrasa',
-    eiinNumber: '১৩২৪৫৬',
-    email: 'info@aljamia.edu.bd',
-    phone: '০১৮০০-০০০-০০০',
-    altPhone: '০১৭০০-০০০-০০০',
-    address: 'মাদ্রাসা রোড, রামপুরা, ঢাকা-১২১৯, বাংলাদেশ',
-    establishedYear: '১৯৮৫',
-    currentSession: '২০২৬-২০২৭',
-    slogan: 'দ্বীনি শিক্ষা ও সুন্নাহ ভিত্তিক আদর্শ চরিত্র গঠন'
-  });
-
   useEffect(() => {
-    // Load saved settings
-    const saved = localStorage.getItem('madrasa_settings');
-    if (saved) {
-      try {
-        setSettings(JSON.parse(saved));
-      } catch (e) {
-        console.error(e);
-      }
-    }
     fetchPublicData();
   }, []);
 

@@ -226,4 +226,34 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
 GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated;
 
+-- 14. Madrasa Settings (Single-row config table)
+CREATE TABLE IF NOT EXISTS public.madrasa_settings (
+    id INTEGER PRIMARY KEY DEFAULT 1,
+    settings JSONB NOT NULL DEFAULT '{}',
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    CONSTRAINT single_row CHECK (id = 1)
+);
+
+-- Ensure RLS is disabled for open access
+ALTER TABLE IF EXISTS public.madrasa_settings DISABLE ROW LEVEL SECURITY;
+
+-- Seed a default empty row so upsert always works
+INSERT INTO public.madrasa_settings (id, settings)
+VALUES (1, '{
+  "madrasaNameBn": "আল-জামিয়া ইসলামিয়া মাদ্রাসা",
+  "madrasaNameEn": "Al-Jamia Islamia Madrasa",
+  "eiinNumber": "১৩২৪৫৬",
+  "email": "info@aljamia.edu.bd",
+  "phone": "০১৮০০-০০০-০০০",
+  "altPhone": "০১৭০০-০০০-০০০",
+  "address": "মাদ্রাসা রোড, রামপুরা, ঢাকা-১২১৯, বাংলাদেশ",
+  "establishedYear": "১৯৮৫",
+  "currentSession": "২০২৬-২০২৭",
+  "currencySymbol": "৳",
+  "passMarks": "৩৩",
+  "maxGpa": "৫.০০",
+  "receiptTitle": "অফিশিয়াল মানি রসিদ",
+  "slogan": "দ্বীনি শিক্ষা ও সুন্নাহ ভিত্তিক আদর্শ চরিত্র গঠন"
+}'::jsonb)
+ON CONFLICT (id) DO NOTHING;
 
