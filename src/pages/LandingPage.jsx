@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   BookOpen, ShieldCheck, UserCheck, Bell, ArrowRight,
   Building2, Users, HeartHandshake, Award, Phone, Mail, MapPin,
-  CheckCircle2, GraduationCap, Star, Menu, X, ChevronRight
+  CheckCircle2
 } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { Button } from '@/components/ui/button';
@@ -13,25 +13,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import PublicNavbar from '../components/PublicNavbar';
 
 export default function LandingPage() {
   const { settings } = useSettings();
   const [notices, setNotices] = useState([]);
   const [dbTeachers, setDbTeachers] = useState([]);
-  const [stats, setStats] = useState({ students: 0, teachers: 0 });
   const [loadingTeachers, setLoadingTeachers] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchPublicData();
   }, []);
-
-  // Close mobile menu on scroll
-  useEffect(() => {
-    const onScroll = () => { if (mobileMenuOpen) setMobileMenuOpen(false); };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [mobileMenuOpen]);
 
   const fetchPublicData = async () => {
     try {
@@ -42,13 +34,6 @@ export default function LandingPage() {
       const { data: teacherData } = await supabase
         .from('profiles').select('*').eq('role', 'teacher');
       if (teacherData) setDbTeachers(teacherData);
-
-      const { count: studentCount } = await supabase
-        .from('students').select('*', { count: 'exact', head: true });
-      const { count: teacherCount } = await supabase
-        .from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'teacher');
-
-      setStats({ students: studentCount || 0, teachers: teacherCount || 0 });
     } catch (error) {
       console.error('Error fetching public data:', error);
     } finally {
@@ -56,117 +41,13 @@ export default function LandingPage() {
     }
   };
 
-  const navLinks = [
-    { href: '#about',      label: 'পরিচিতি' },
-    { href: '#programs',   label: 'শিক্ষা স্তর' },
-    { href: '#teachers',   label: 'শিক্ষকমণ্ডলী' },
-    { href: '#notices',    label: 'নোটিশ বোর্ড' },
-    { href: '#facilities', label: 'সুবিধাসমূহ' },
-    { href: '#contact',    label: 'যোগাযোগ' },
-  ];
-
-  const handleNavClick = () => setMobileMenuOpen(false);
-
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-emerald-500 selection:text-white overflow-x-hidden">
       {/* Background Pattern */}
       <div className="fixed inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:24px_24px]" />
 
-      {/* ─── Top Contact Bar ─── */}
-      <div className="bg-slate-950 text-slate-400 text-xs py-2 px-4 border-b border-slate-800">
-        <div className="container mx-auto max-w-7xl flex justify-between items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
-            <span className="flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-              <span className="truncate">{settings.phone}</span>
-            </span>
-            <span className="hidden sm:flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-              <span className="truncate">{settings.email}</span>
-            </span>
-          </div>
-          <span className="text-emerald-400 font-semibold text-[11px] sm:text-xs whitespace-nowrap">
-            ভর্তি সেশন {settings.currentSession} চলমান
-          </span>
-        </div>
-      </div>
-
-      {/* ─── Navbar ─── */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900/95 backdrop-blur-md">
-        <div className="container mx-auto flex h-16 sm:h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
-
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="flex h-9 w-9 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white shadow-lg shadow-emerald-900/30">
-              <Building2 className="h-5 w-5 sm:h-6 sm:w-6" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-sm sm:text-xl font-bold tracking-tight text-white leading-tight truncate">
-                {settings.madrasaNameBn}
-              </h1>
-              <p className="text-[10px] sm:text-xs text-emerald-400 font-medium hidden xs:block">মাদ্রাসা ব্যবস্থাপনা ইআরপি</p>
-            </div>
-          </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-semibold text-slate-300">
-            {navLinks.map(link => (
-              <a key={link.href} href={link.href}
-                className="hover:text-emerald-400 transition-colors whitespace-nowrap">
-                {link.label}
-              </a>
-            ))}
-          </nav>
-
-          {/* Desktop CTA */}
-          <div className="hidden lg:flex items-center gap-3">
-            <Link to="/login">
-              <Button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold shadow-md shadow-emerald-900/40 px-5 h-10 rounded-xl text-sm">
-                পোর্টালে প্রবেশ করুন <ArrowRight className="ml-1.5 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          {/* Mobile: Login + Hamburger */}
-          <div className="flex lg:hidden items-center gap-2">
-            <Link to="/login">
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg h-8 px-3 text-xs">
-                লগইন
-              </Button>
-            </Link>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Dropdown Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="lg:hidden overflow-hidden border-t border-slate-800 bg-slate-900/98 backdrop-blur-md"
-            >
-              <nav className="px-4 py-3 space-y-1">
-                {navLinks.map(link => (
-                  <a key={link.href} href={link.href} onClick={handleNavClick}
-                    className="flex items-center justify-between px-3 py-3 rounded-xl text-slate-300 hover:text-emerald-400 hover:bg-slate-800 transition-colors font-medium text-sm">
-                    {link.label}
-                    <ChevronRight className="h-4 w-4 opacity-50" />
-                  </a>
-                ))}
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
+      {/* Shared Public Navbar */}
+      <PublicNavbar />
 
       {/* ─── Hero Section ─── */}
       <section className="relative pt-14 pb-16 sm:pt-20 sm:pb-24 overflow-hidden">
@@ -198,34 +79,14 @@ export default function LandingPage() {
                   পোর্টালে প্রবেশ করুন <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </Link>
-              <a href="#notices" className="w-full sm:w-auto">
+              <Link to="/notices" className="w-full sm:w-auto">
                 <Button variant="outline" size="lg"
                   className="w-full sm:w-auto h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg border-slate-700 text-slate-200 hover:bg-slate-800 rounded-xl font-semibold">
                   নোটিশ বোর্ড দেখুন
                 </Button>
-              </a>
+              </Link>
             </div>
           </motion.div>
-
-          {/* Stats Bar */}
-          <div className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 max-w-5xl mx-auto">
-            {[
-              { value: `${stats.students}+`, label: 'ভর্তিষ্কৃত শিক্ষার্থী', icon: UserCheck, color: 'text-emerald-400' },
-              { value: `${stats.teachers}+`, label: 'অভিজ্ঞ শিক্ষক মণ্ডলী', icon: BookOpen, color: 'text-teal-400' },
-              { value: '১০০%',              label: 'সমাপনী পাসের হার',       icon: ShieldCheck, color: 'text-cyan-400' },
-              { value: settings.establishedYear || '১৯৮৫', label: 'প্রতিষ্ঠার সন (Est.)', icon: Award, color: 'text-amber-400' },
-            ].map((stat, i) => (
-              <Card key={i} className="bg-slate-800/60 border-slate-700/60 backdrop-blur-md">
-                <CardContent className="p-4 sm:p-6 text-center">
-                  <div className={`text-2xl sm:text-4xl font-extrabold mb-1 ${stat.color}`}>{stat.value}</div>
-                  <div className="text-[10px] sm:text-xs font-medium text-slate-300 flex items-center justify-center gap-1">
-                    <stat.icon className={`h-3.5 w-3.5 flex-shrink-0 ${stat.color}`} />
-                    <span className="leading-tight">{stat.label}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -257,9 +118,9 @@ export default function LandingPage() {
                 title: 'জাতীয় ও আন্তর্জাতিক অর্জন',
                 desc: 'বাংলাদেশ মাদ্রাসা শিক্ষা বোর্ড এবং জাতীয় ক্বিরাত ও হেফজ প্রতিযোগিতায় আমাদের শিক্ষার্থীরা প্রতি বছর মেধা তালিকায় শীর্ষ স্থান অধিকার করে।',
               },
-            ].map(({ icon: Icon, color, title, desc }, i) => (
+            ].map(({ icon: Icon, title, desc }, i) => (
               <Card key={i} className="bg-slate-900/80 border-slate-800 p-5 sm:p-6 rounded-2xl">
-                <div className={`p-3 bg-${color}-500/10 text-${color}-400 w-fit rounded-xl mb-4 border border-${color}-500/20`}>
+                <div className="p-3 bg-emerald-500/10 text-emerald-400 w-fit rounded-xl mb-4 border border-emerald-500/20">
                   <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <h3 className="font-bold text-lg sm:text-xl text-white mb-2">{title}</h3>
@@ -281,16 +142,16 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
-              { badge: 'হিফজুল কুরআন', badgeColor: 'emerald', title: 'হিফজ ও ক্বিরাত বিভাগ', desc: 'আন্তর্জাতিক মানের ক্বারী ও হাফেজ সাহেবদের তত্ত্বাবধানে হিফজ প্রদান।', meta: 'বয়স: ৬-১২ বছর', metaColor: 'emerald' },
-              { badge: 'প্রাথমিক',     badgeColor: 'teal',    title: 'ইবতেদায়ী শাখা (১ম-৫ম)',    desc: 'মৌলিক কায়েদা, আমপারা, বাংলা, ইংরেজি, গণিত ও পরিবেশ পরিচিতি।',    meta: 'সরকারি সমাপনী সমমান', metaColor: 'teal' },
-              { badge: 'মাধ্যমিক',    badgeColor: 'cyan',    title: 'দাখিল ও আলিম (৬ষ্ঠ-১২শ)', desc: 'আরবি সাহিত্য, ফিকাহ, বিজ্ঞান ও সাধারণ মানবিক শিক্ষা সমন্বিত শাখা।', meta: 'সাধারণ ও বিজ্ঞান বিভাগ', metaColor: 'cyan' },
-              { badge: 'উচ্চতর',      badgeColor: 'purple',  title: 'ফাজিল ও ডিগ্রী',           desc: 'ইসলামিক তাফসীর, হাদীস গবেষণা ও আরবি ভাষায় উচ্চতর ডিগ্রি কারিকুলাম।', meta: 'ইসলামিক ইউনিভার্সিটি অধিভুক্ত', metaColor: 'purple' },
-            ].map(({ badge, badgeColor, title, desc, meta, metaColor }, i) => (
+              { badge: 'হিফজুল কুরআন', badgeColor: 'emerald', title: 'হিফজ ও ক্বিরাত বিভাগ', desc: 'আন্তর্জাতিক মানের ক্বারী ও হাফেজ সাহেবদের তত্ত্বাবধানে হিফজ প্রদান।', meta: 'বয়স: ৬-১২ বছর' },
+              { badge: 'প্রাথমিক',     badgeColor: 'teal',    title: 'ইবতেদায়ী শাখা (১ম-৫ম)',    desc: 'মৌলিক কায়েদা, আমপারা, বাংলা, ইংরেজি, গণিত ও পরিবেশ পরিচিতি।',    meta: 'সরকারি সমাপনী সমমান' },
+              { badge: 'মাধ্যমিক',    badgeColor: 'cyan',    title: 'দাখিল ও আলিম (৬ষ্ঠ-১২শ)', desc: 'আরবি সাহিত্য, ফিকাহ, বিজ্ঞান ও সাধারণ মানবিক শিক্ষা সমন্বিত শাখা।', meta: 'সাধারণ ও বিজ্ঞান বিভাগ' },
+              { badge: 'উচ্চতর',      badgeColor: 'purple',  title: 'ফাজিল ও ডিগ্রী',           desc: 'ইসলামিক তাফসীর, হাদীস গবেষণা ও আরবি ভাষায় উচ্চতর ডিগ্রি কারিকুলাম।', meta: 'ইসলামিক ইউনিভার্সিটি অধিভুক্ত' },
+            ].map(({ badge, title, desc, meta }, i) => (
               <Card key={i} className="bg-slate-800/80 border-slate-700/80 p-5 sm:p-6 rounded-2xl">
-                <Badge className={`bg-${badgeColor}-500/20 text-${badgeColor}-300 border-${badgeColor}-500/30 mb-3 text-xs`}>{badge}</Badge>
+                <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 mb-3 text-xs">{badge}</Badge>
                 <h3 className="font-bold text-lg text-white mb-2">{title}</h3>
                 <p className="text-slate-400 text-xs leading-relaxed mb-4">{desc}</p>
-                <span className={`text-xs text-${metaColor}-400 font-semibold flex items-center gap-1`}>
+                <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" /> {meta}
                 </span>
               </Card>
@@ -316,7 +177,7 @@ export default function LandingPage() {
             <div className="text-center py-12 p-6 sm:p-8 bg-slate-900/90 border border-slate-800 rounded-2xl max-w-lg mx-auto">
               <Users className="w-10 h-10 text-slate-600 mx-auto mb-3" />
               <h4 className="font-bold text-white text-base">কোনো নিবন্ধিত শিক্ষক পাওয়া যায়নি</h4>
-              <p className="text-slate-400 text-xs mt-1">অ্যাডমিন প্যানেল (ম্যানেজ শিক্ষক) থেকে নতুন শিক্ষক নিবন্ধন করলে তা এখানে সরাসরি প্রদর্শিত হবে।</p>
+              <p className="text-slate-400 text-xs mt-1">অ্যাডমিন প্যানেল থেকে নতুন শিক্ষক নিবন্ধন করলে তা এখানে সরাসরি প্রদর্শিত হবে।</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
@@ -372,63 +233,6 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ─── Notice Board ─── */}
-      <section id="notices" className="py-14 sm:py-20 bg-slate-950/60 border-t border-slate-800">
-        <div className="container mx-auto max-w-4xl px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 sm:mb-10">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex-shrink-0">
-                <Bell className="h-5 w-5 sm:h-6 sm:w-6" />
-              </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">অফিশিয়াল নোটিশ বোর্ড</h2>
-                <p className="text-xs text-slate-400 mt-0.5">অভিভাবক ও শিক্ষার্থীদের জন্য সর্বশেষ বিজ্ঞপ্তি</p>
-              </div>
-            </div>
-            <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 self-start sm:self-auto">লাইভ আপডেট</Badge>
-          </div>
-
-          <Card className="bg-slate-900/90 border-slate-800 shadow-2xl overflow-hidden backdrop-blur-md rounded-2xl">
-            <CardContent className="p-4 sm:p-6">
-              {notices.length === 0 ? (
-                <div className="space-y-3 sm:space-y-4">
-                  {[
-                    { title: 'পবিত্র ঈদুল ফিতর উপলক্ষে মাদ্রাসা ছুটির নোটিশ ২০২৬', date: '২০২৬-০৩-২০', desc: 'সকল ছাত্র ও অভিভাবকদের অবগতির জন্য জানানো যাচ্ছে যে আগামী ২৩শে মার্চ থেকে ৫ই এপ্রিল পর্যন্ত ক্লাস বন্ধ থাকবে।' },
-                    { title: 'প্রথম সাময়িক পরীক্ষার সময়সূচি ও প্রবেশপত্র বিতরণ',    date: '২০২৬-০৩-১৫', desc: 'সকল শ্রেণির প্রথম সাময়িক পরীক্ষা আগামী ১০ই এপ্রিল থেকে শুরু হবে। প্রবেশপত্র অফিস কক্ষ থেকে সংগ্রহ করুন।' },
-                  ].map((n, i) => (
-                    <div key={i} className="p-3 sm:p-4 border border-slate-800 bg-slate-950/40 rounded-xl">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-1">
-                        <h4 className="font-bold text-white text-sm sm:text-base leading-snug">{n.title}</h4>
-                        <Badge variant="secondary" className="bg-slate-800 text-emerald-400 text-xs flex-shrink-0 self-start">{n.date}</Badge>
-                      </div>
-                      <p className="text-slate-400 text-xs leading-relaxed">{n.desc}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <Accordion type="single" collapsible className="w-full">
-                  {notices.map((notice) => (
-                    <AccordionItem key={notice.id} value={notice.id} className="border-slate-800">
-                      <AccordionTrigger className="hover:no-underline hover:text-emerald-400 text-slate-100 py-3 sm:py-4 transition-colors text-left">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 w-full pr-3">
-                          <span className="font-semibold text-sm sm:text-lg leading-snug">{notice.title}</span>
-                          <Badge variant="secondary" className="bg-slate-800 text-slate-300 text-xs w-fit flex-shrink-0">
-                            {new Date(notice.created_at).toLocaleDateString('bn-BD')}
-                          </Badge>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="text-slate-300 text-sm sm:text-base leading-relaxed pt-2 pb-4 border-t border-slate-800/80">
-                        <div dangerouslySetInnerHTML={{ __html: notice.content_html || notice.content }} />
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              )}
-            </CardContent>
-          </Card>
         </div>
       </section>
 

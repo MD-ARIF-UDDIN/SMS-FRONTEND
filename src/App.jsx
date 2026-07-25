@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import LandingPage from './pages/LandingPage';
+import PublicNoticeBoard from './pages/PublicNoticeBoard';
 import Login from './pages/auth/Login';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
@@ -68,13 +69,6 @@ const DashboardRedirect = () => {
   return <Navigate to="/login" replace />;
 };
 
-/** Redirects /admin shortcut for admins */
-const AdminRedirect = () => {
-  const { user, role, loading } = useAuth();
-  if (loading) return <AuthLoadingSpinner />;
-  if (user && role === 'admin') return <Navigate to="/dashboard/admin" replace />;
-  return <Navigate to="/login" replace />;
-};
 
 /** Redirect already-logged-in users away from /login */
 const GuestRoute = ({ children }) => {
@@ -95,10 +89,11 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
+          <Route path="/notices" element={<PublicNoticeBoard />} />
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
           <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/admin" element={<AdminRedirect />} />
+
 
           {/* Dashboard root — role-based redirect */}
           <Route path="/dashboard" element={<DashboardRedirect />} />
